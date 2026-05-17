@@ -22,7 +22,108 @@ This repository provides a discrete-event simulation framework built in Julia to
 
 To replicate our findings, you need to install [Julia](https://julialang.org/downloads/) (v1.10 or higher). We highly recommend using the locked environment provided in this repository.
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/boulaichm9/PROJET-DE-REGULATION-DES-VEHICULES-PARTAGES
-   cd PROJET-DE-REGULATION-DES-VEHICULES-PARTAGES
+### 1. Clone this repository
+
+```bash
+git clone https://github.com/boulaichm9/PROJET-DE-REGULATION-DES-VEHICULES-PARTAGES.git
+cd PROJET-DE-REGULATION-DES-VEHICULES-PARTAGES
+```
+
+### 2. Instantiate the Julia environment
+
+Open the Julia REPL in the project root directory and run:
+
+```bash
+julia --project=.
+```
+
+Then, inside the Julia REPL:
+
+```julia
+using Pkg
+Pkg.instantiate()
+```
+## 📊 Running the Experiments
+
+### Option A: Using the Interactive Jupyter Notebook (Recommended)
+
+The easiest way to view plots and explore the networks interactively is through the notebook.
+
+Launch Jupyter from your terminal:
+
+```bash
+jupyter notebook
+```
+
+Then:
+
+1. Navigate to the `notebooks/` folder.
+2. Open `demo_simulation.ipynb`.
+3. Run the cells.
+
+The notebook is pre-configured to go up one directory level (`Pkg.activate("..")`) to find and use your project environment seamlessly.
+
+---
+
+### Option B: Running via a Julia Script
+
+You can also run experiments directly from a standalone script or terminal session at the root of your project directory:
+
+```julia
+using Pkg
+Pkg.activate(".") # Activates the local project environment
+
+# Include your source files
+include("src/instances.jl")
+include("src/simulation.jl")
+
+using Plots
+
+# 1. Load the Manhattan instance parameters
+# Note: manhattan() unpacks 9 variables (ignoring 'pos' for the simulation function)
+S, N, K, x, pos, lambda, sigma, t_velo, t_camion = manhattan()
+
+# 2. Run the discrete-event simulation for 50,000 time units
+sim_time = 50000.0
+metrics = run_simulation(
+    S, N, K, x,
+    lambda, sigma,
+    t_velo, t_camion,
+    sim_time
+)
+
+# 3. Print summary metrics
+println("--- Simulation Complete ---")
+println("Total successful user trips: ", metrics[:k])
+println("Total failed bike lookups:   ", metrics[:echecs])
+
+# 4. Generate and save the performance plot
+p = plot(
+    metrics[:liste_t],
+    metrics[:liste_k],
+    title = "Bike-Sharing Rebalancing Performance (Manhattan)",
+    xlabel = "Simulation Time",
+    ylabel = "Satisfied Users (k)",
+    label = "k(t)",
+    linewidth = 2,
+    color = :blue
+)
+
+savefig(p, "manhattan_performance.png")
+
+println("Performance plot saved as 'manhattan_performance.png'")
+```
+
+---
+
+## ✒️ Citation
+
+If you utilize this framework or the asymmetric simulation topologies in your academic work, please cite our paper:
+
+```bibtex
+@article{sharedvehicles2026,
+  title   = {Projet de régulation des véhicules partagés},
+  author  = {Adam Boulaich, Geoffroy Garibal, Adam Haissane, Sylvie Han},
+  year    = {2026},
+}
+```
