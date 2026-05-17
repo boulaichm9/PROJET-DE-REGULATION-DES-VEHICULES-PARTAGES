@@ -43,7 +43,7 @@ Then, inside the Julia REPL:
 using Pkg
 Pkg.instantiate()
 ```
-## 📊 Running the Experiments
+## Running the Experiments
 
 ### Option A: Using the Interactive Jupyter Notebook (Recommended)
 
